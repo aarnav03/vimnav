@@ -306,30 +306,13 @@ void editorScroll(void) {
   if (E.rendX >= E.screenCol + E.colOffset)
     E.colOffset = E.rendX - E.screenCol + 1;
 }
-void editorDrawLineNum(struct appendBuf *ab) {
-  int i = 1;
-  char num = (char)i;
-
-  for (int j = 0; j < E.numRow; j++) {
-    abAppend(ab, "\r", 1);
-    abAppend(ab, &num, 1);
-    i++;
-  }
-}
 
 void editorDrawrows(struct appendBuf *ab) {
   int y;
-  for (y = 0; y < E.screenRow - 1; y++) {
-    int n = 1;
-    if (n < E.numRow) {
-      n = 1;
-      char nChar = (char)n;
+  for (y = 0; y < E.screenRow; y++) {
 
-      abAppend(ab, &nChar, 1);
-      n++;
-    }
     int filerow = y + E.rowOffset;
-    if (filerow >= E.numRow - 1) {
+    if (filerow >= E.numRow) {
       if (y == E.screenRow / 3 && E.numRow == 0) {
         char welcome[80];
         int welcomeLen = snprintf(welcome, sizeof(welcome),
@@ -416,6 +399,9 @@ void editorRefreshScreen(void) {
 
   editorScroll();
   struct appendBuf ab = appendBuf_init;
+
+  abAppend(&ab, "\x1b[48;2;20;27;30m", strlen("\x1b[48;2;0;128;128m"));
+  abAppend(&ab, "\x1b[38;2;218;218;218m", strlen("\x1b[48;2;218;218;218m"));
 
   abAppend(&ab, "\x1b[?25l", 6);
   // abAppend(&ab, "\x1b[2J", 4);
